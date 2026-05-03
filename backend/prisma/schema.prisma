@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  ENTRY_VOLUNTEER
+  FOOD_VOLUNTEER
+}
+
+enum ScanType {
+  ENTRY
+  FOOD
+}
+
+enum ScanResult {
+  SUCCESS
+  DENIED
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique // using name for username/name as it maps from previous user.username
+  email        String?   @unique
+  passwordHash String
+  role         Role      @default(ENTRY_VOLUNTEER)
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  scanLogs     ScanLog[]
+}
+
+model Attendee {
+  id             Int       @id @default(autoincrement())
+  name           String
+  roll           String    @unique
+  email          String?   
+  token          String    @unique
+  qrLink         String
+  
+  entryStatus    Boolean   @default(false)
+  foodStatus     Boolean   @default(false)
+  
+  entryScannedAt DateTime?
+  foodScannedAt  DateTime?
+  
+  entryOtpUsed   Boolean   @default(false)
+  foodOtpUsed    Boolean   @default(false)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  scanLogs       ScanLog[]
+  otpLogs        OtpLog[]
+}
+
+model ScanLog {
+  id           Int       @id @default(autoincrement())
+  attendeeId   Int?
+  scannedById  Int?
+  scanType     ScanType
+  result       ScanResult
+  reason       String
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime  @default(now())
+
+  attendee     Attendee? @relation(fields: [attendeeId], references: [id])
+  scannedBy    User?     @relation(fields: [scannedById], references: [id])
+}
+
+model OtpLog {
+  id           Int       @id @default(autoincrement())
+  attendeeId   Int
+  otpCode      String
+  otpType      ScanType
+  attempts     Int       @default(0)
+  used         Boolean   @default(false)
+  expiresAt    DateTime
+  verifiedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  attendee     Attendee  @relation(fields: [attendeeId], references: [id])
+}
