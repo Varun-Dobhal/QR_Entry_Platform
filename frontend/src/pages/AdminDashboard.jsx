@@ -354,7 +354,7 @@ export default function AdminDashboard({ onLogout }) {
           background: "var(--surface)",
           borderBottom: "1px solid var(--border)",
           padding: "0 1.25rem",
-          height: 58,
+          height: 64,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -364,12 +364,12 @@ export default function AdminDashboard({ onLogout }) {
           boxShadow: "0 1px 0 var(--border)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.875rem" }}>
           <div
             style={{
-              width: 34,
-              height: 34,
-              borderRadius: 10,
+              width: 38,
+              height: 38,
+              borderRadius: 12,
               background: "linear-gradient(135deg,#6366f1,#4f46e5)",
               display: "flex",
               alignItems: "center",
@@ -377,41 +377,32 @@ export default function AdminDashboard({ onLogout }) {
               boxShadow: "0 4px 12px rgba(99,102,241,0.4)",
             }}
           >
-            <ScanLine size={17} color="#fff" />
+            <ScanLine size={18} color="#fff" />
           </div>
           <div>
-            <p
+            <h1
               style={{
                 fontWeight: 800,
-                fontSize: "0.9375rem",
+                fontSize: "1.1rem",
                 color: "var(--text-primary)",
                 margin: 0,
-                lineHeight: 1,
+                lineHeight: 1.2,
               }}
             >
-              Admin Dashboard
-            </p>
-            <p
-              style={{
-                fontSize: "0.7rem",
-                color: "var(--text-muted)",
-                margin: 0,
-                fontWeight: 500,
-              }}
-            >
-              {stats.total} attendees
-            </p>
+              Event Control Center
+            </h1>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <button onClick={() => setDark(!dark)} className="btn-icon">
-            {dark ? <Sun size={16} /> : <Moon size={16} />}
+
+        <div style={{ display: "flex", gap: "0.625rem", alignItems: "center" }}>
+          <button onClick={() => setDark(!dark)} className="btn-icon" style={{ borderRadius: 10 }}>
+            {dark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button onClick={fetchAttendees} className="btn-icon" title="Refresh">
-            <RefreshCw size={16} />
+          <button onClick={fetchAttendees} className="btn-icon" title="Refresh" style={{ borderRadius: 10 }}>
+            <RefreshCw size={18} />
           </button>
-          <button onClick={onLogout} className="btn btn-sm btn-secondary">
-            <LogOut size={13} /> Logout
+          <button onClick={onLogout} className="btn btn-sm btn-secondary" style={{ marginLeft: "0.25rem", height: "36px" }}>
+            <LogOut size={16} /> <span className="hide-mobile">Logout</span>
           </button>
         </div>
       </header>

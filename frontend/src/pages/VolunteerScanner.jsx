@@ -48,7 +48,11 @@ export default function VolunteerScanner({ role, onLogout }) {
   const initCamera = async () => {
     setPermState('asking');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+      const constraints = {
+        video: { facingMode: 'environment' },
+        audio: false
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
       if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.play().catch(() => {}); }
       setPermState('granted');
@@ -68,10 +72,16 @@ export default function VolunteerScanner({ role, onLogout }) {
   const scanFrame = () => {
     const v = videoRef.current, c = canvasRef.current;
     if (!v || !c || v.readyState < v.HAVE_ENOUGH_DATA) { rafRef.current = requestAnimationFrame(scanFrame); return; }
-    c.width = v.videoWidth || 640; c.height = v.videoHeight || 480;
+    // Scale down for mobile performance (cap width at 600px)
+    const scale = Math.min(1, 600 / (v.videoWidth || 640));
+    c.width = (v.videoWidth || 640) * scale; 
+    c.height = (v.videoHeight || 480) * scale;
+    
     const ctx = c.getContext('2d', { willReadFrequently: true });
     ctx.drawImage(v, 0, 0, c.width, c.height);
     const imgData = ctx.getImageData(0, 0, c.width, c.height);
+    
+    // Invert attempts can be costly, 'dontInvert' is much faster for dark codes on light bg
     const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
     if (code?.data && !isScanRef.current && !loadingRef.current) { 
       isScanRef.current = true; 
